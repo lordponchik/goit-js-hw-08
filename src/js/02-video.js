@@ -1,4 +1,5 @@
 import Player from '@vimeo/player';
+import throttle from 'lodash.throttle';
 
 const vimeoPlayerEL = document.querySelector('#vimeo-player');
 //const player = new Player(vimeoPlayerEL);
@@ -30,7 +31,9 @@ player.on('play', function (e) {
     });
 });
 
-player.on('timeupdate', function (e) {
+player.on('timeupdate', throttle(recordLocalCurrenTime, 1000));
+
+function recordLocalCurrenTime(e) {
   const videoCurrentTime = {
     duration: e.duration,
     percent: e.percent,
@@ -41,8 +44,7 @@ player.on('timeupdate', function (e) {
     VIDEOPLAYER_CURRENT_TIME,
     JSON.stringify(videoCurrentTime)
   );
-
   if (e.percent === 1) {
     localStorage.removeItem(VIDEOPLAYER_CURRENT_TIME);
   }
-});
+}
